@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} {% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="ارسل">
+</form>
+
+    {% for qa in qas %}
+    <div class="card">
+        <div class="card-header">
+          سؤال
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ qa.question }}</h5>
+          <p class="card-text">{{ qa.answer }}</p>
+          <p class="card-text">     {{ qa.created }}
+        </p>
+        </div>
+      </div>
+        <h1></h1>
+        
+    {% endfor %}
+{% endblock %}
