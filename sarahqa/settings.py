@@ -31,15 +31,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'qeustionsandswers.apps.QeustionsandswersConfig',
     'django_extensions',
     'easy_thumbnails',
+    'qeustionsandswers.apps.QeustionsandswersConfig',
+    'QA.apps.QaConfig'
+
 
 
 ]
@@ -68,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            
         },
     },
 ]
@@ -123,3 +127,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGIN_REDIRECT_URL = 'qeustionsandswers:home'
+LOGIN_URL = 'account:login'
+LOGOUT_URL = 'account:logout'
+#add email settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'ziyad.alotaibe@gmail.com'
+EMAIL_HOST_PASSWORD = 'Zizoo511!@'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+from django.urls import reverse_lazy
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse_lazy('user_detail',
+                                        args=[u.username])
+}
