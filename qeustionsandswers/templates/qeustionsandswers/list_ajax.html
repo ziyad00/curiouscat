@@ -1,0 +1,45 @@
+{% load thumbnail %}
+
+{% for qa in qas %}
+<div class="image">
+<div class="list-group">
+
+    <a href="#" data-toggle="modal" data-target="#exampleModal{{qa.id}}" class="list-group-item list-group-item-action">{{ qa.question }} <br><small>{{ qa.created|date:"M, d, Y, f A" }}</small></a>
+
+   
+</div>
+
+  
+<!-- Modal -->
+<div class="modal fade" id="exampleModal{{qa.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <class class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ qa.question }}  <br><small>{{ qa.created|date:"M, d, Y, f A" }}</small>
+        <div class='form-group' action="" method="post">
+            <form method="post" class="form-m">
+              
+              {% csrf_token %}
+              {{ form.as_p  }}
+              <input type="hidden" name="r_id" value="{{qa.id}}">
+              <input type="hidden" name="form_type" value="formOne">
+              <input type="submit" class="btn btn-primary" value="ارسل">
+            </form></div>
+      </div>
+
+      </class>
+    </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+
+
+
+        
