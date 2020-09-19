@@ -176,6 +176,6 @@ AUTHENTICATION_BACKENDS = [
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '686762213191-barqcrcghou866djhefd2h3ptgj17ro0.apps.googleusercontent.com' # Google Consumer Key
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'L1Zr7816sHe__RA1upOoJW26' # Google Consumer Secret
 
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
+REDIS_HOST = 'ec2-3-217-82-56.compute-1.amazonaws.com'
+REDIS_PORT = 13469
 REDIS_DB = 0
