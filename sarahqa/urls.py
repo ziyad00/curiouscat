@@ -17,13 +17,17 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('user/', include('account.urls')),
     path('admin/', admin.site.urls),
-    path('', include('qeustionsandswers.urls', namespace='qeustionsandswers')),
+    path('', include('account.urls')),
+    path('question/', include('qeustionsandswers.urls', namespace='qeustionsandswers')),
+    path('social-auth/', include('social_django.urls', namespace='social')),
 
 
 
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

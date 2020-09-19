@@ -1,0 +1,92 @@
+{% load thumbnail %}
+{% with user=action.user profile=action.user.profile %}
+<div class="action">
+  <div class="images">
+    {% if profile.photo %}
+      {% thumbnail user.profile.photo "80x80" crop="100%" as im %}
+      <a href="{{ user.get_absolute_url }}">
+        <img src="{{ im.url }}" alt="{{ user.get_full_name }}"
+         class="item-img">
+      </a>
+    {% endif %}
+
+    {% if action.target %}
+      {% with target=action.target %}
+     
+  </div>
+  <div class="info">
+    <p>
+      <span class="date">{{ action.created|timesince }} ago</span>
+      <br />
+      <a href="{{ target.user.get_absolute_url }}">
+        {{ target.user.first_name }}
+      </a>
+      
+      {% endwith %}
+    {% endif %}
+    <p><a href="{{ user.get_absolute_url }}">
+      {{ user.first_name }}</a>
+      {{ action.verb }}
+      {% if action.target %}
+        {% with target=action.target %}
+          {% if target.question %}      
+
+
+            <a href="#" id="{{target.id}}" name="#qexampleModal{{target.id}}" data-toggle="modal" data-target="#exampleModal{{target.id}}" class="list-group-item list-group-item-action" data-id="{{ target.id }}"><small>{{ target.user.first_name }}</small>{{ target.question }} <br><small>{{ target.created|date:"M, d, Y, f A" }}</small></a>
+            
+          <!-- Modal -->
+      <div class="modal fade" id="exampleModal{{target.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <class class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{ target.question }}  <br><small>{{ target.created|date:"M, d, Y, f A" }}</small>
+              
+              {% for reply in target.replies.all %}
+
+              <div class="card-header">
+                   اجابة
+                 </div>
+                 <div class="card-body">
+                   <h5 class="card-title">{{ reply.reply }}</h5>
+                   <p class="card-text"></p>
+                   <p class="card-text">    <small> {{ reply.created|date:"M. d,Y, f A"  }}
+             </small></p> 
+              <p class="card-text">    <a href="{{ reply.user.get_absolute_url }}">{{ reply.user.username  }}</a> من 
+             </p>
+             </div>
+             {% empty %}
+             <div class="card-header rtl">
+               لا توجد اجابة حتى الآن
+             </div>
+         {% endfor %}
+              <div class='form-group' action="" method="post">
+                  <form method="post" class="form-m">
+                    {% csrf_token %}
+                    {{ replyForm.as_p }}
+                    <input type="hidden" name="r_id" value="{{target.id}}">
+                    <input type="submit" class="btn btn-primary" value="ارسل">
+                  </form></div>
+            </div>
+      
+            </class>
+          </div>
+        </div>
+      </div>
+      
+          {% else %}
+          
+          <a href="{{ target.get_absolute_url }}">{{ target }}</a>
+          {% endif%}
+          
+          {% endwith %}
+      {% endif %}
+    </p>
+  </div>
+</div>
+{% endwith %}

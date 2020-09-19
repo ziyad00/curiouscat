@@ -3,10 +3,122 @@
 
 {% block title %}{{ user.get_full_name }}{% endblock %}
 
+
 {% block content %}
-  <h1>{{ user.get_full_name }}</h1>
-  <div class="profile-info">
- 
+<div class="right">
+  <h1>{{ user.username }}</h1>
+  <img src="{% thumbnail user.profile.photo 180x180 %}" class="user-detail">
+
+{% with total_followers=user.followers.count %}
+<p>    <span class="count">
+      <span class="total">{{ total_followers }}</span>
+    follower{{ total_followers|pluralize }}
+    </span>
+    <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="follow button">
+      {% if request.user not in user.followers.all %}
+        Follow
+      {% else %}
+        Unfollow
+      {% endif %}
+    </a>
+    {% endwith %}</p>
+  </div>
+    <div class='form-group'>
+      <form method="post" class="form-m">
+        {% csrf_token %}
+        {{ QAForm.as_p  }}
+        <input type="hidden" name="form_type" value="formOne">
+        <input type="submit" class="btn btn-primary" value="ارسل">
+      </form></div>
+      {% for qa in qas %}
+      <div class="list-group">
+          <div class='cat'>
+          <a href="#" id="{{qa.id}}" name="#qexampleModal{{qa.id}}" data-toggle="modal" data-target="#exampleModal{{qa.id}}" class="list-group-item list-group-item-action" data-id="{{ qa.id }}"><small>{{ qa.user.first_name }}</small>{{ qa.question }} <br><small>{{ qa.created|date:"M, d, Y, f A" }}</small></a>
+         </div>
+        </div>
+      
+        
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal{{qa.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <class class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{ qa.question }}  <br><small>{{ qa.created|date:"M, d, Y, f A" }}</small>
+              {% for reply in qa.replies.all %}
+              <div class="card-header">
+                   اجابة
+                 </div>
+                 <div class="card-body">
+                   <h5 class="card-title">{{ reply.reply }}</h5>
+                   <p class="card-text"></p>
+                   <p class="card-text">    <small> {{ reply.created|date:"M. d,Y, f A"  }}
+             </small></p> 
+              <p class="card-text">    <a href="{{ reply.user.get_absolute_url }}">{{ reply.user.username  }}</a> من 
+             </p>
+             </div>
+             {% empty %}
+             <div class="card-header rtl">
+               لا توجد اجابة حتى الآن
+             </div>
+         {% endfor %}
+              <div class='form-group' action="" method="post">
+                  <form method="post" class="form-m">
+                    {% csrf_token %}
+                    {{ replyForm.as_p }}
+                    <input type="hidden" name="r_id" value="{{qa.id}}">
+                    <input type="hidden" name="form_type" value="formTwo">
+                    <input type="submit" class="btn btn-primary" value="ارسل">
+                  </form></div>
+            </div>
+      
+            </class>>
+          </div>
+        </div>
+      </div>
+      
+      
+              
+              
+      
+        
+          {% endfor %}
+{% endblock %}
+
+
+{% block domready %}
+  $('a.follow').click(function(e){
+    e.preventDefault();
+    $.post('{% url "user_follow" %}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok') {
+          var previous_action = $('a.follow').data('action');
+
+          // toggle data-action
+          $('a.follow').data('action',
+            previous_action == 'follow' ? 'unfollow' : 'follow');
+          // toggle link text
+          $('a.follow').text(
+            previous_action == 'follow' ? 'Unfollow' : 'Follow');
+
+          // update total followers
+          var previous_followers = parseInt(
+            $('span.count .total').text());
+          $('span.count .total').text(previous_action == 'follow' ?
+          previous_followers + 1 : previous_followers - 1);
+        }
+      }
+    );
+  });
 {% endblock %}
 
 

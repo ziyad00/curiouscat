@@ -6,8 +6,10 @@ from . import views
 app_name = 'qeustionsandswers'
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('detail/<int:id>/', views.question_detail, name='question_detail'),
+    #path('detail/<int:id>/', views.question_detail, name='question_detail'),
+    path('new/', views.new_questions, name='new_questions'),
+
+   # path('new/<int:id>', views.new_questions, name='new_questions_ids'),
 
 
 

@@ -30,11 +30,11 @@
   </div>
     <h1></h1>
 
-    <div class='form-group'>
-      <form method="post" class="form-m">
+    <div class=''>
+      <form method="post" class="">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="ارسل">
+        <input type="submit" class="btn btn-primary" value="ارسل">
       </form></div>
     
 {% endblock %}

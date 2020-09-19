@@ -4,51 +4,76 @@ from django.http import HttpResponseRedirect
 from QA.models import QA
 from .forms import QAForms, ReplyForms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from actions.utils import create_action
+import redis
+from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, \
+                                  PageNotAnInteger
 
 
-def home(request):
-    qas = QA.objects.all().filter(published=True)
-    if request.method == 'POST':
-        form = QAForms(request.POST)
-        if form.is_valid():
-            new_question = form.save()
-            new_question.save()
-            form = QAForms()
+# connect to redis
+r = redis.Redis(host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB)
 
-            
 
-    else:
-        form = QAForms()
-    return render(request, 'qeustionsandswers/home.html', {'form': form, 'qas':qas})
-
-def question_detail(request, id):
     
-    question = get_object_or_404(QA, id=id)
-    User = get_user_model()
-    deafult_user = User.objects.get(id=2)
+
+
+@login_required
+def new_questions(request):
+    qas = QA.objects.all().filter(reciever=request.user,published=False)
+    paginator = Paginator(qas, 10)
+    page = request.GET.get('page')
+    try:
+        qas  = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        qas = paginator.page(1)
+    except EmptyPage:
+
+        if request.is_ajax():
+
+            # If the request is AJAX and the page is out of range
+            # return an empty page
+            return HttpResponse('')
+        # If page is out of range deliver last page of results
+        qas = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
         form = ReplyForms(request.POST)
         if form.is_valid():
-            new_reply = form.save(commit=False)
-            if request.user.is_authenticated:
-                new_reply.user = request.user
-            else:
-                new_reply.user = deafult_user
-
-            new_reply.qa = question
-
-            new_reply.save()
+            r_id = form.cleaned_data['r_id']
+            question = get_object_or_404(QA, id=r_id)
+            new_question = form.save(commit=False)
+            new_question.user = request.user
+            new_question.qa = question
+            new_question.save()
+            question.published = True
+            question.save()
+            create_action(request.user, 'answered', question)
+            r.zincrby('questions_ranking', 1, question.id)
 
             form = ReplyForms()
-
     else:
         form = ReplyForms()
-    # increment image ranking by 1
-    #r.zincrby('image_ranking', 1, image.id)
+    if request.is_ajax():
+            return render(request, 'qeustionsandswers/list_ajax.html', {'form': form, 'qas':qas})
+
+    return render(request, 'qeustionsandswers/new_questions.html', {'form': form, 'qas':qas})
+
+
+@login_required
+def image_ranking(request):
+    # get image ranking dictionary
+    image_ranking = r.zrange('image_ranking', 0, -1, desc=True)[:10]
+    image_ranking_ids = [int(id) for id in image_ranking]
+    # get most viewed images
+    most_viewed = list(Image.objects.filter(
+                           id__in=image_ranking_ids))
+    most_viewed.sort(key=lambda x: image_ranking_ids.index(x.id))
     return render(request,
-                  'qeustionsandswers/detail.html',
-                  {'qa': question,
-                  'form': form})
-
-
-
+                  'images/image/ranking.html',
+                  {'section': 'images',
+                   'most_viewed': most_viewed})
