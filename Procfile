@@ -1,1 +1,1 @@
-web: gunicorn sarahqa.wsgi
+web: gunicorn sarahqa.wsgi --log-file -
