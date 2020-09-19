@@ -181,3 +181,13 @@ REDIS_PORT = 13469
 REDIS_DB = 0
 REDIS_PASSWORD = 'pc5376f639c064f87bdcb3f142eca06f53983391433e229da280bdd2791365b83'
 
+CACHES = {
+    "default": {
+         "BACKEND": "redis_cache.RedisCache",
+         "LOCATION": 'redis://h:pc5376f639c064f87bdcb3f142eca06f53983391433e229da280bdd2791365b83@ec2-3-217-82-56.compute-1.amazonaws.com:13469',
+            'OPTIONS': {
+            'PASSWORD': 'pc5376f639c064f87bdcb3f142eca06f53983391433e229da280bdd2791365b83',
+         
+        },
+    }
+}
